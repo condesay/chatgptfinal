@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 
-model_engine = "gpt-3.5-turbo"
+model_engine = "davinci"
 
 def generate_text(prompt, api_key):
     openai.api_key = api_key
