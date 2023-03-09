@@ -24,18 +24,19 @@ def main():
     if 'chat_history' not in st.session_state:
         st.session_state['chat_history'] = []
     
-    user_input = st.text_input("You:", key='input')
-    
-    if user_input:
-        output = generate_response(user_input)
-        # Store the message in the chat history
-        st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
-    
-    if st.session_state['chat_history']:
-        for i in range(len(st.session_state['chat_history'])):
-            chat = st.session_state['chat_history'][i]
+    # Define the layout of the page
+    col1, col2 = st.beta_columns([3, 1])
+    with col1:
+        for chat in st.session_state['chat_history']:
             st.write("You: " + chat['user_input'])
             st.write("Bot: " + chat['bot_output'])
+    
+    with col2:
+        user_input = st.text_input("You:", key='input')
+        if user_input:
+            output = generate_response(user_input)
+            # Store the message in the chat history
+            st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
 
 if __name__ == "__main__":
     main()
