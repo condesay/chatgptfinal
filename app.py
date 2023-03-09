@@ -31,9 +31,7 @@ with st.sidebar:
 
 txtInput1=st.text_area('Code à Analyser', value="### Postgres SQL tables, with their properties:\n#\n# Employee(id, name, department_id)\n# Department(id, name, address)\n# Salary_Payments(id, employee_id, amount, date)\n#\n### A query to list the names of the departments which employed more than 10 employees in the last 3 months\n\nSELECT",height=300)
 txtInputAPPKEY = st.text_input('appKey',value="Appkey")
-openai.api_type = "azure"
-openai.api_base = "https://stsopenai.openai.azure.com/"
-openai.api_version = "2022-12-01"
+
 openai.api_key =txtInputAPPKEY
 
 
