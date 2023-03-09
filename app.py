@@ -14,30 +14,28 @@ def generate_response(prompt):
     return message
 
 def main():
-    st.title("ChatGPT Sayon Web App")
+    st.title("ChatGPT-like Web App")
     
     # Ask the user for their OpenAI API key
     api_key = st.text_input("Enter your OpenAI API key:")
     openai.api_key = api_key
     
     # Storing the chat
-    if 'generated' not in st.session_state:
-        st.session_state['generated'] = []
-    if 'past' not in st.session_state:
-        st.session_state['past'] = []
+    if 'chat_history' not in st.session_state:
+        st.session_state['chat_history'] = []
     
     user_input = st.text_input("You:", key='input')
     
     if user_input:
         output = generate_response(user_input)
-        # Store the output
-        st.session_state['past'].append(user_input)
-        st.session_state['generated'].append(output)
+        # Store the message in the chat history
+        st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
     
-    if st.session_state['generated']:
-        for i in range(len(st.session_state['generated'])-1, -1, -1):
-            st.write(st.session_state["generated"][i])
-            st.write(st.session_state['past'][i])
+    if st.session_state['chat_history']:
+        for i in range(len(st.session_state['chat_history'])):
+            chat = st.session_state['chat_history'][i]
+            st.write("You: " + chat['user_input'])
+            st.write("Bot: " + chat['bot_output'])
 
 if __name__ == "__main__":
     main()
