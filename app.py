@@ -1,42 +1,74 @@
 import openai
 import streamlit as st
 
-def generate_response(prompt):
-    completion = openai.Completion.create(
-        engine='text-davinci-003',
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.6,
-    )
-    message = completion.choices[0].text
-    return message
+# Définir la clé API OpenAI
+openai.api_key = "YOUR_API_KEY_HERE"
 
-def main():
-    st.title("ChatGPT-like Web App")
-    
-    # Ask the user for their OpenAI API key
-    api_key = st.text_input("Enter your OpenAI API key:")
+# Définir l'ID du modèle OpenAI que nous allons utiliser
+model_engine = "davinci-003"
+
+# Demander à l'utilisateur de saisir la clé API OpenAI
+api_key = st.text_input("Entrez votre clé API OpenAI")
+
+# Vérifier que la clé API est valide
+if api_key:
     openai.api_key = api_key
-    
-    # Storing the chat
-    if 'chat_history' not in st.session_state:
-        st.session_state['chat_history'] = []
-    
-    # Define the layout of the page
-    col1, col2 = st.beta_columns([3, 1])
-    with col1:
-        for chat in st.session_state['chat_history']:
-            st.write("You: " + chat['user_input'])
-            st.write("Bot: " + chat['bot_output'])
-    
-    with col2:
-        user_input = st.text_input("You:", key='input')
-        if user_input:
-            output = generate_response(user_input)
-            # Store the message in the chat history
-            st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
+    try:
+        # Vérifier que la clé API fonctionne en effectuant une demande de complétion avec un prompt de test
+        response = openai.Completion.create(
+            engine=model_engine,
+            prompt="Bonjour, comment allez-vous ?",
+            max_tokens=10,
+            n=1,
+            stop=None,
+            temperature=0.5,
+        )
+    except openai.error.AuthenticationError:
+        st.warning("Clé API OpenAI invalide. Veuillez entrer une clé API valide.")
+    else:
+        st.success("Clé API OpenAI valide. Vous pouvez maintenant poser des questions.")
 
-if __name__ == "__main__":
-    main()
+        # Créer des listes vides pour stocker les questions et les réponses précédentes
+        questions = []
+        answers = []
+
+        # Boucle principale pour poser des questions et recevoir des réponses
+        while True:
+            # Afficher une zone de texte pour poser des questions
+            question = st.text_input("Posez une question")
+
+            # Vérifier si l'utilisateur a cliqué sur le bouton "Envoyer"
+            if st.button("Envoyer"):
+                # Créer un prompt en ajoutant la question à une phrase de démarrage
+                prompt = f"Répondez à la question suivante : {question} \nRéponse :"
+
+                # Envoyer la demande de complétion à l'API OpenAI
+                response = openai.Completion.create(
+                    engine=model_engine,
+                    prompt=prompt,
+                    max_tokens=50,
+                    n=1,
+                    stop=None,
+                    temperature=0.5,
+                )
+
+                # Afficher la réponse de l'API OpenAI
+                answer = response.choices[0].text.strip()
+                st.write("Réponse : ", answer)
+
+                # Ajouter la question et la réponse aux listes précédentes
+                questions.append(question)
+                answers.append(answer)
+
+            # Afficher les questions et les réponses précédentes
+            if questions and answers:
+                st.write("Historique des questions et réponses :")
+                for i in range(len(questions)):
+                    st.write("Question : ", questions[i])
+                    st.write("Réponse : ", answers[i])
+
+            # Ajouter un bouton pour effacer l'historique des questions et réponses
+            if st.button("Effacer l'historique"):
+                questions = []
+                answers = []
+
