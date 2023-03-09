@@ -32,7 +32,7 @@ def main():
         st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
     
     if st.session_state['chat_history']:
-        for i in range(len(st.session_state['chat_history'])):
+        for i in range(len(st.session_state['chat_history'])): 
             chat = st.session_state['chat_history'][i]
             st.write("You: " + chat['user_input'])
             st.write("Bot: " + chat['bot_output'])
