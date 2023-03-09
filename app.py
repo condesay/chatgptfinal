@@ -38,8 +38,24 @@ def generate_response(prompt):
     return response.choices[0].text.strip()
 
 # Obtenir l'entrée utilisateur
-user_input = st.text_input("Vous: ")
+user_input = None
+if model:
+    user_input = st.text_input("Vous: ")
 
 # Générer une réponse de Davinci et afficher la sortie
-if user_input and model:
+if user_input:
     st.write("Bot: ", generate_response(user_input))
+    st.text_input("Entrez votre clé API OpenAI : ", value="", key="api_key", visible=False)
+
+    # Vérifier si l'utilisateur souhaite continuer à discuter
+    cont = st.button("Continuer la discussion")
+    if not cont:
+        st.stop()
+
+# Empêcher l'utilisateur de soumettre une entrée vide
+if user_input == "":
+    st.warning("Veuillez entrer un texte valide")
+
+# Cacher la zone de texte une fois que l'utilisateur a saisi une entrée valide
+if user_input and model:
+    st.text_input("Entrez votre clé API OpenAI : ", value="", key="api_key", visible=False)
