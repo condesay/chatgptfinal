@@ -24,7 +24,7 @@ def main():
     if 'chat_history' not in st.session_state:
         st.session_state['chat_history'] = []
     
-    user_input = st.text_input("You:", key='input')
+    user_input = st.text_input("You:")
     
     if user_input:
         output = generate_response(user_input)
