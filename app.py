@@ -1,30 +1,45 @@
 import openai
 import streamlit as st
 
-model_engine = "davinci"
+# Interface utilisateur Streamlit
+st.title("Bot intelligent")
 
-def generate_text(prompt, api_key):
-    openai.api_key = api_key
-    response = openai.Completion.create(
-        engine=model_engine,
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
+# Demander la clé API OpenAI à l'utilisateur
+api_key = st.text_input("Entrez votre clé API OpenAI : ")
 
-    message = response.choices[0].text
-    return message.strip()
+# Vérifier si la clé API est valide et initialiser l'API OpenAI
+def initialize_openai(api_key):
+    try:
+        openai.api_key = api_key
+        models = openai.Model.list()
+        model_id = None
+        for model in models['data']:
+            if model['id'] == 'davinci':
+                model_id = model['id']
+                break
 
-def main():
-    st.title(" Chatbot de Sayon")
-    api_key = st.text_input("Enter your OpenAI API key:")
-    user_input = st.text_input("You:", "")
+        if model_id:
+            st.write("Initialisation de Davinci...")
+            return openai.Model(model_id)
+        else:
+            st.write("Impossible de trouver le modèle Davinci")
+            return None
+    except:
+        st.write("Clé API invalide")
+        return None
 
-    if st.button("Send"):
-        bot_response = generate_text(user_input, api_key)
-        st.text_area("Bot:", value=bot_response, height=200, max_chars=None, key=None)
+model = None
+if api_key:
+    model = initialize_openai(api_key)
 
-if __name__ == "__main__":
-    main()
+# Fonction pour générer une réponse de Davinci
+def generate_response(prompt):
+    response = model.generate(prompt=prompt, max_tokens=1024)
+    return response.choices[0].text.strip()
+
+# Obtenir l'entrée utilisateur
+user_input = st.text_input("Vous: ")
+
+# Générer une réponse de Davinci et afficher la sortie
+if user_input and model:
+    st.write("Bot: ", generate_response(user_input))
