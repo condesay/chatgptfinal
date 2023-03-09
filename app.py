@@ -1,61 +1,50 @@
 import openai
 import streamlit as st
 
-# Interface utilisateur Streamlit
-st.title("Bot intelligent")
+# Définir les paramètres de l'API OpenAI
+openai.api_key = "YOUR_API_KEY_HERE"
+model_engine = "text-davinci-003"
 
-# Demander la clé API OpenAI à l'utilisateur
-api_key = st.text_input("Entrez votre clé API OpenAI : ")
+# Définir la fonction pour obtenir une réponse à partir de l'API OpenAI
+def ask_question(prompt):
+    response = openai.Completion.create(
+        engine=model_engine,
+        prompt=prompt,
+        max_tokens=1024,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+    answer = response.choices[0].text.strip()
+    return answer
 
-# Vérifier si la clé API est valide et initialiser l'API OpenAI
-def initialize_openai(api_key):
-    try:
+# Définir la fonction principale pour l'interface utilisateur
+def main():
+    # Afficher le champ de texte pour la clé API
+    api_key = st.text_input("Entrez votre clé API OpenAI :")
+
+    # Vérifier si la clé API est correcte
+    if api_key:
         openai.api_key = api_key
-        models = openai.Model.list()
-        model_id = None
-        for model in models['data']:
-            if model['id'] == 'davinci':
-                model_id = model['id']
-                break
+        try:
+            openai.Completion.create(engine=model_engine, prompt="Test prompt", max_tokens=0)
+        except Exception as e:
+            st.error("La clé API est incorrecte. Veuillez entrer une clé valide.")
+            return
 
-        if model_id:
-            st.write("Initialisation de Davinci...")
-            return openai.Model(model_id)
-        else:
-            st.write("Impossible de trouver le modèle Davinci")
-            return None
-    except:
-        st.write("Clé API invalide")
-        return None
+        # Si la clé API est correcte, afficher le champ de texte pour la question et la réponse
+        st.success("La clé API est valide. Vous pouvez maintenant poser des questions.")
+        conversation_history = []
+        while True:
+            user_input = st.text_input("Vous :")
+            if not user_input:
+                continue
+            conversation_history.append(f"Vous : {user_input}")
+            bot_response = ask_question("\n".join(conversation_history))
+            conversation_history.append(f"Bot : {bot_response}")
+            st.write(f"Bot : {bot_response}")
+            st.write("\n".join(conversation_history[-10:]))
+            st.write("---")
 
-model = None
-if api_key:
-    model = initialize_openai(api_key)
-
-# Fonction pour générer une réponse de Davinci
-def generate_response(prompt):
-    response = model.generate(prompt=prompt, max_tokens=1024)
-    return response.choices[0].text.strip()
-
-# Obtenir l'entrée utilisateur
-user_input = None
-if model:
-    user_input = st.text_input("Vous: ")
-
-# Générer une réponse de Davinci et afficher la sortie
-if user_input:
-    st.write("Bot: ", generate_response(user_input))
-    st.text_input("Entrez votre clé API OpenAI : ", value="", key="api_key", visible=False)
-
-    # Vérifier si l'utilisateur souhaite continuer à discuter
-    cont = st.button("Continuer la discussion")
-    if not cont:
-        st.stop()
-
-# Empêcher l'utilisateur de soumettre une entrée vide
-if user_input == "":
-    st.warning("Veuillez entrer un texte valide")
-
-# Cacher la zone de texte une fois que l'utilisateur a saisi une entrée valide
-if user_input and model:
-    st.text_input("Entrez votre clé API OpenAI : ", value="", key="api_key", visible=False)
+if __name__ == "__main__":
+    main()
