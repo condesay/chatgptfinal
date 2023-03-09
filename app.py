@@ -3,17 +3,8 @@ import streamlit as st
 
 model_engine = "davinci"
 
-# Liste de questions et réponses prédéfinies pour le chatbot
-qa_pairs = {
-    "Quel est votre nom ?": "Je suis un chatbot créé avec OpenAI.",
-    "Comment allez-vous ?": "Je suis un programme informatique, donc je ne ressens rien. Mais je suis là pour vous aider !",
-    "Pouvez-vous m'aider ?": "Bien sûr ! De quoi avez-vous besoin ?"
-}
-
-def generate_response(user_input, api_key):
-    """Générer une réponse à partir de l'entrée de l'utilisateur en utilisant l'API OpenAI."""
+def generate_text(prompt, api_key):
     openai.api_key = api_key
-    prompt = f"Q: {user_input}\nA:"
     response = openai.Completion.create(
         engine=model_engine,
         prompt=prompt,
@@ -22,40 +13,18 @@ def generate_response(user_input, api_key):
         stop=None,
         temperature=0.5,
     )
-    return response.choices[0].text.strip()
 
-def chatbot():
-    """Fonction principale pour l'interface utilisateur du chatbot."""
-    st.title("Chatbot OpenAI")
+    message = response.choices[0].text
+    return message.strip()
 
-    # Afficher le formulaire de connexion si l'utilisateur n'a pas encore entré sa clé API
-    if "api_key" not in st.session_state:
-        st.write("Veuillez entrer votre clé API OpenAI :")
-        st.session_state.api_key = st.text_input("", type="password")
+def main():
+    st.title("OpenAI Chatbot Demo")
+    api_key = st.text_input("Enter your OpenAI API key:")
+    user_input = st.text_input("You:", "")
 
-    # Afficher un message d'erreur si la clé API n'est pas valide
-    if not st.session_state.api_key:
-        st.warning("Veuillez entrer une clé API OpenAI valide.")
-        return
-
-    # Demander à l'utilisateur d'entrer une question
-    user_input = st.text_input("Vous :", "")
-
-    # Vérifier si l'utilisateur a envoyé une question
-    if not user_input:
-        st.info("Posez-moi une question pour commencer à discuter !")
-        return
-
-    # Vérifier si la question est prédéfinie dans la liste
-    if user_input in qa_pairs:
-        st.text_area("Bot :", value=qa_pairs[user_input], height=100, max_chars=None, key=None)
-        return
-
-    # Générer une réponse en utilisant l'API OpenAI
-    bot_response = generate_response(user_input, st.session_state.api_key)
-
-    # Afficher la réponse du chatbot
-    st.text_area("Bot :", value=bot_response, height=200, max_chars=None, key=None)
+    if st.button("Send"):
+        bot_response = generate_text(user_input, api_key)
+        st.text_area("Bot:", value=bot_response, height=200, max_chars=None, key=None)
 
 if __name__ == "__main__":
-    chatbot()
+    main()
