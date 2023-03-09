@@ -28,11 +28,13 @@ def chatbot():
     """Fonction principale pour l'interface utilisateur du chatbot."""
     st.title("Chatbot OpenAI")
 
-    # Demander à l'utilisateur d'entrer sa clé API OpenAI
-    api_key = st.text_input("Entrez votre clé API OpenAI :")
+    # Afficher le formulaire de connexion si l'utilisateur n'a pas encore entré sa clé API
+    if "api_key" not in st.session_state:
+        st.write("Veuillez entrer votre clé API OpenAI :")
+        st.session_state.api_key = st.text_input("", type="password")
 
     # Afficher un message d'erreur si la clé API n'est pas valide
-    if not api_key:
+    if not st.session_state.api_key:
         st.warning("Veuillez entrer une clé API OpenAI valide.")
         return
 
@@ -50,7 +52,7 @@ def chatbot():
         return
 
     # Générer une réponse en utilisant l'API OpenAI
-    bot_response = generate_response(user_input, api_key)
+    bot_response = generate_response(user_input, st.session_state.api_key)
 
     # Afficher la réponse du chatbot
     st.text_area("Bot :", value=bot_response, height=200, max_chars=None, key=None)
