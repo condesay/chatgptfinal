@@ -18,7 +18,7 @@ def generate_text(prompt, api_key):
     return message.strip()
 
 def main():
-    st.title("OpenAI Chatbot Demo")
+    st.title(" Chatbot de Sayon")
     api_key = st.text_input("Enter your OpenAI API key:")
     user_input = st.text_input("You:", "")
 
