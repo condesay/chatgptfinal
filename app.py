@@ -41,9 +41,9 @@ def main():
         if choix_modeles == 'Davinci':
             modele_option = st.selectbox('Mod', ['Code', 'Text'])
             if modele_option == 'Code':
-                modele_a_charger = "davinci-codex-002"
+                modele_a_charger = "code-davinci-002"
             elif modele_option == 'Text':
-                modele_a_charger = "davinci-002"
+                modele_a_charger = "davinci-codex-002"
     
         st.session_state['vtemperature'] = st.slider('Temperature :', value=0.7, min_value=0., max_value=1., step=.1)
         st.session_state['vtoken'] = st.slider('Token :', value=190, min_value=0, max_value=2048, step=1)
