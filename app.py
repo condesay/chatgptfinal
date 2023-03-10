@@ -17,24 +17,36 @@ def generate_response(prompt, model_engine, temperature, max_tokens, top_p, freq
     return message
 
 def main():
-    st.title("ChatGPT-Sayon Web App")
-    
-    # Ask the user for their OpenAI API key
-    api_key = st.text_input("Enter your OpenAI API key:")
-    openai.api_key = api_key
-    
-    # Storing the chat
-    if 'chat_history' not in st.session_state:
-        st.session_state['chat_history'] = []
-    
-    user_input = st.text_input("You:")
-    
-    if user_input:
-        output = generate_response(user_input, 'text-davinci-002', st.session_state['vtemperature'], st.session_state['vtoken'], st.session_state['vtop'], st.session_state['vfreq_penalty'], st.session_state.get('vpres_penalty', 0.0))
-        # Store the message in the chat history
-        st.session_state['chat_history'].append({'user_input': user_input, 'bot_output': output})
-    
-    # Allow the user to configure parameters
+    st.title("ChatGPT Web App")
+
+    # get user API key
+    api_key = st.text_input("Enter OpenAI API Key:", type="password")
+
+    if api_key:
+        # storing the chat
+        if 'generated' not in st.session_state:
+            st.session_state['generated'] = []
+
+        if 'past' not in st.session_state:
+            st.session_state['past'] = []
+
+        user_input=st.text_input("You:",key='input')
+
+        if user_input:
+            output=generate_response(user_input, api_key)
+
+            #store the output
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
+
+        if st.session_state['generated']:
+
+            for i in range(len(st.session_state['generated'])-1, -1, -1):
+                message(st.session_state["generated"][i], key=str(i))
+                message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+
+           
+          # Allow the user to configure parameters
     with st.sidebar:
         st.title('Paramétrages:')
         choix_modeles = st.radio('Modèles', ['Davinci'])
@@ -50,7 +62,11 @@ def main():
         st.session_state['vtop'] = st.slider('Top_p :', value=1.0, min_value=0.0, max_value=1.0, step=.1)
         st.session_state['vfreq_penalty'] = st.slider('frequence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
         st.session_state['vpres_penalty'] = st.slider('présence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
-
+       
+if __name__ == '__main__':
+    main()
+    
+   
 if __name__ == '__main__':
     main()
  
