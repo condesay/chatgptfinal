@@ -93,7 +93,8 @@ def main():
         st.sidebar.write(f"Top P: {settings['top_p']}")
         st.sidebar.write(f"Frequency Penalty: {settings['frequency_penalty']}")
         st.sidebar.write(f"Presence Penalty: {settings['presence_penalty']}")
-                                                          
-  if __name__ == '__main__':
+                
+            
+if __name__ == '__main__':
     main()                                                   
                                                           
