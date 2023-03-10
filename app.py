@@ -1,7 +1,8 @@
 import openai
 import streamlit as st
 
-def generate_response(prompt, model_engine, temperature, max_tokens, top_p, frequency_penalty, presence_penalty):
+def generate_response(prompt,  api_key):
+    openai.api_key = api_key
     completion = openai.Completion.create(
         engine=model_engine,
         prompt=prompt,
@@ -30,16 +31,17 @@ def main():
         if 'past' not in st.session_state:
             st.session_state['past'] = []
 
-        user_input = st.text_input("You:", key='input')
+        user_input=st.text_input("You:",key='input')
 
         if user_input:
-            output = generate_response(user_input, api_key, st.session_state['vtemperature'], st.session_state['vtoken'], st.session_state['vtop'], st.session_state['vfreq_penalty'], st.session_state['vpres_penalty'])
+            output=generate_response(user_input, api_key)
 
-            # store the output
+            #store the output
             st.session_state['past'].append(user_input)
             st.session_state['generated'].append(output)
 
         if st.session_state['generated']:
+
             for i in range(len(st.session_state['generated'])-1, -1, -1):
                 message(st.session_state["generated"][i], key=str(i))
                 message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
