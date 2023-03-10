@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 
-def generate_response(prompt,model_engine,  api_key):
+def generate_response(prompt, model_engine, temperature, max_tokens, top_p, frequency_penalty, presence_penalty):
     openai.api_key = api_key
     completion = openai.Completion.create(
         engine=model_engine,
