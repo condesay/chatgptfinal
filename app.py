@@ -1,10 +1,13 @@
 import openai
 import streamlit as st
 
-def generate_response(prompt, model_engine, temperature, max_tokens, top_p, frequency_penalty, presence_penalty, api_key):
-    openai.api_key = api_key
+# Set up OpenAI API key
+openai.api_key = "YOUR_API_KEY_HERE"
+
+# Define function to generate response from OpenAI GPT-3
+def generate_response(prompt, engine, temperature, max_tokens, top_p, frequency_penalty, presence_penalty):
     completion = openai.Completion.create(
-        engine=model_engine,
+        engine=engine,
         prompt=prompt,
         max_tokens=max_tokens,
         n=1,
@@ -14,54 +17,83 @@ def generate_response(prompt, model_engine, temperature, max_tokens, top_p, freq
         frequency_penalty=frequency_penalty,
         presence_penalty=presence_penalty
     )
-    message = completion.choices[0].text
+    message = completion.choices[0].text.strip()
     return message
 
-def main():
-    st.title("ChatGPT Web App")
+# Define function to display chat messages
+def message(text, is_user=False):
+    if is_user:
+        st.write("You: " + text)
+    else:
+        st.write("Bot: " + text)
 
-    # get user API key
+# Define Streamlit app
+def main():
+    # Set page title
+    st.set_page_config(page_title="ChatGPT Web App")
+
+    # Set up sidebar options
+    engine_options = {
+        "Davinci": {
+            "Text": "davinci-codex",
+            "Code": "davinci-codex"
+        }
+    }
+
+    # Set up initial settings
+    settings = {
+        "engine": "Davinci",
+        "mode": "Text",
+        "temperature": 0.7,
+        "max_tokens": 190,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0
+    }
+
+    # Create session state for chat history
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
+
+    # Display page title and API key input
+    st.title("ChatGPT Web App")
     api_key = st.text_input("Enter OpenAI API Key:", type="password")
 
+    # If API key is provided, display chat interface
     if api_key:
-        # storing the chat
-        if 'generated' not in st.session_state:
-            st.session_state['generated'] = []
+        # Update OpenAI API key
+        openai.api_key = api_key
 
-        if 'past' not in st.session_state:
-            st.session_state['past'] = []
-
-        user_input=st.text_input("You:",key='input')
-
+        # Display chat interface
+        st.header("Chat")
+        user_input = st.text_input("You:")
         if user_input:
-            output = generate_response(user_input, 'text-davinci-002', st.session_state['vtemperature'], st.session_state['vtoken'], st.session_state['vtop'], st.session_state['vfreq_penalty'], st.session_state.get('vpres_penalty', 0.0))
+            message(user_input, is_user=True)
+            prompt = "\n".join([f"You: {msg}" for msg in st.session_state["chat_history"]] + [f"Bot: {user_input}"])
+            engine = engine_options[settings["engine"]][settings["mode"]]
+            response = generate_response(prompt, engine, settings["temperature"], settings["max_tokens"], settings["top_p"], settings["frequency_penalty"], settings["presence_penalty"])
+            message(response)
+            st.session_state["chat_history"].append(user_input)
 
-            #store the output
-            st.session_state['past'].append(user_input)
-            st.session_state['generated'].append(output)
-
-        if st.session_state['generated']:
-
-            for i in range(len(st.session_state['generated'])-1, -1, -1):
-                message(st.session_state["generated"][i], key=str(i))
-                message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
-
-    # Allow the user to configure parameters
-    with st.sidebar:
-        st.title('Paramétrages:')
-        choix_modeles = st.radio('Modèles', ['Davinci'])
-        if choix_modeles == 'Davinci':
-            modele_option = st.selectbox('Mod', ['Code', 'Text'])
-            if modele_option == 'Code':
-                modele_a_charger = "code-davinci-002"
-            elif modele_option == 'Text':
-                modele_a_charger = "davinci-codex-002"
-
-        st.session_state['vtemperature'] = st.slider('Temperature :', value=0.7, min_value=0., max_value=1., step=.1)
-        st.session_state['vtoken'] = st.slider('Token :', value=190, min_value=0, max_value=2048, step=1)
-        st.session_state['vtop'] = st.slider('Top_p :', value=1.0, min_value=0.0, max_value=1.0, step=.1)
-        st.session_state['vfreq_penalty'] = st.slider('frequence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
-        st.session_state['vpres_penalty'] = st.slider('présence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
-
-if __name__ == '__main__':
-    main()
+        # Display chat settings sidebar
+        st.sidebar.title("Settings")
+        settings["engine"] = st.sidebar.selectbox("Engine", list(engine_options.keys()))
+        settings["mode"] = st.sidebar.selectbox("Mode", list(engine_options[settings["engine"]].keys()))
+        settings["temperature"] = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, step=0.1, value=settings["temperature"])
+        settings["max_tokens"] = st.sidebar.slider("Max Tokens", min_value=1, max_value=2048, step=1, value=settings["max_tokens"])
+        settings["top_p"] = st.sidebar.slider("Top P", min_value=0.0, max_value=1.0, step=0.1, value=settings["top_p"])
+        settings["frequency_penalty"] = st.sidebar.slider("Frequency Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["frequency_penalty"])
+        settings["presence_penalty"] = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["presence_penalty"])
+                                                              # Display current settings
+       st.sidebar.markdown("### Current Settings")
+       st.sidebar.write(f"Engine: {settings['engine']}")
+       st.sidebar.write(f"Mode: {settings['mode']}")
+       st.sidebar.write(f"Temperature: {settings['temperature']}")
+       st.sidebar.write(f"Max Tokens: {settings['max_tokens']}")
+      ,st.sidebar.write(f"Top P: {settings['top_p']}")
+       st.sidebar.write(f"Frequency Penalty: {settings['frequency_penalty']}")
+       st.sidebar.write(f"Presence Penalty: {settings['presence_penalty']}")
+                                                          
+  if __name__ == '__main__':
+    main()                                                   
+                                                          
