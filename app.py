@@ -34,7 +34,7 @@ def main():
         user_input=st.text_input("You:",key='input')
 
         if user_input:
-            output=generate_response(user_input, api_key)
+            output = generate_response(user_input, 'text-davinci-002', st.session_state['vtemperature'], st.session_state['vtoken'], st.session_state['vtop'], st.session_state['vfreq_penalty'], st.session_state.get('vpres_penalty', 0.0))
 
             #store the output
             st.session_state['past'].append(user_input)
