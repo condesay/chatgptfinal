@@ -30,23 +30,21 @@ def main():
         if 'past' not in st.session_state:
             st.session_state['past'] = []
 
-        user_input=st.text_input("You:",key='input')
+        user_input = st.text_input("You:", key='input')
 
         if user_input:
-            output=generate_response(user_input, api_key)
+            output = generate_response(user_input, api_key, st.session_state['vtemperature'], st.session_state['vtoken'], st.session_state['vtop'], st.session_state['vfreq_penalty'], st.session_state['vpres_penalty'])
 
-            #store the output
+            # store the output
             st.session_state['past'].append(user_input)
             st.session_state['generated'].append(output)
 
         if st.session_state['generated']:
-
             for i in range(len(st.session_state['generated'])-1, -1, -1):
                 message(st.session_state["generated"][i], key=str(i))
                 message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
 
-           
-          # Allow the user to configure parameters
+    # Allow the user to configure parameters
     with st.sidebar:
         st.title('Paramétrages:')
         choix_modeles = st.radio('Modèles', ['Davinci'])
@@ -56,17 +54,12 @@ def main():
                 modele_a_charger = "code-davinci-002"
             elif modele_option == 'Text':
                 modele_a_charger = "davinci-codex-002"
-    
+
         st.session_state['vtemperature'] = st.slider('Temperature :', value=0.7, min_value=0., max_value=1., step=.1)
         st.session_state['vtoken'] = st.slider('Token :', value=190, min_value=0, max_value=2048, step=1)
         st.session_state['vtop'] = st.slider('Top_p :', value=1.0, min_value=0.0, max_value=1.0, step=.1)
         st.session_state['vfreq_penalty'] = st.slider('frequence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
         st.session_state['vpres_penalty'] = st.slider('présence penalty :', value=0.0, min_value=0.0, max_value=1.0, step=.1)
-       
+
 if __name__ == '__main__':
     main()
-    
-   
-if __name__ == '__main__':
-    main()
- 
