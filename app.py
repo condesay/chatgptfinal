@@ -85,14 +85,14 @@ def main():
         settings["frequency_penalty"] = st.sidebar.slider("Frequency Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["frequency_penalty"])
         settings["presence_penalty"] = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["presence_penalty"])
                                                               # Display current settings
-       st.sidebar.markdown("### Current Settings")
-       st.sidebar.write(f"Engine: {settings['engine']}")
-       st.sidebar.write(f"Mode: {settings['mode']}")
-       st.sidebar.write(f"Temperature: {settings['temperature']}")
-       st.sidebar.write(f"Max Tokens: {settings['max_tokens']}")
-      ,st.sidebar.write(f"Top P: {settings['top_p']}")
-       st.sidebar.write(f"Frequency Penalty: {settings['frequency_penalty']}")
-       st.sidebar.write(f"Presence Penalty: {settings['presence_penalty']}")
+        st.sidebar.markdown("### Current Settings")
+        st.sidebar.write(f"Engine: {settings['engine']}")
+        st.sidebar.write(f"Mode: {settings['mode']}")
+        st.sidebar.write(f"Temperature: {settings['temperature']}")
+        st.sidebar.write(f"Max Tokens: {settings['max_tokens']}")
+       ,st.sidebar.write(f"Top P: {settings['top_p']}")
+        st.sidebar.write(f"Frequency Penalty: {settings['frequency_penalty']}")
+        st.sidebar.write(f"Presence Penalty: {settings['presence_penalty']}")
                                                           
   if __name__ == '__main__':
     main()                                                   
