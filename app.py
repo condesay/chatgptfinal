@@ -31,7 +31,7 @@ def message(text, is_user=False):
 # Define Streamlit app
 def main():
     # Set page title
-    st.set_page_config(page_title="ChatGPT Web App Sayon")
+    st.set_page_config(page_title="ChatGPT Web App by Sayon")
 
     # Set up sidebar options
     engine_options = {
@@ -57,8 +57,8 @@ def main():
         st.session_state["chat_history"] = []
 
     # Display page title and API key input
-    st.title("ChatGPT Web App")
-    api_key = st.text_input("Enter OpenAI API Key:", type="password")
+    st.title("ChatGPT Web App par Sayon")
+    api_key = st.text_input("Entrez votre clé OpenAI API Key:", type="password")
 
     # If API key is provided, display chat interface
     if api_key:
@@ -74,7 +74,7 @@ def main():
             engine = engine_options[settings["engine"]][settings["mode"]]
             response = generate_response(prompt, engine, settings["temperature"], settings["max_tokens"], settings["top_p"], settings["frequency_penalty"], settings["presence_penalty"])
             message(response)
-            st.session_state["chat_history"].append(user_input)
+            st.session_state["chat_history"].append(response)
 
         # Display chat settings sidebar
         st.sidebar.title("Settings")
