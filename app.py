@@ -74,10 +74,10 @@ def main():
             engine = engine_options[settings["engine"]][settings["mode"]]
             response = generate_response(prompt, engine, settings["temperature"], settings["max_tokens"], settings["top_p"], settings["frequency_penalty"], settings["presence_penalty"])
             message(response)
-            st.session_state["chat_history"].append(response)
+            st.session_state["chat_history"].append(user_input)
 
         # Display chat settings sidebar
-        st.sidebar.title("Settings")
+        st.sidebar.title("Paramètres")
         settings["engine"] = st.sidebar.selectbox("Engine", list(engine_options.keys()))
         settings["mode"] = st.sidebar.selectbox("Mode", list(engine_options[settings["engine"]].keys()))
         settings["temperature"] = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, step=0.1, value=settings["temperature"])
@@ -86,7 +86,7 @@ def main():
         settings["frequency_penalty"] = st.sidebar.slider("Frequency Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["frequency_penalty"])
         settings["presence_penalty"] = st.sidebar.slider("Presence Penalty", min_value=0.0, max_value=1.0, step=0.1, value=settings["presence_penalty"])
                                                               # Display current settings
-        st.sidebar.markdown("### Current Settings")
+        st.sidebar.markdown("### Paramètres Actuels")
         st.sidebar.write(f"Engine: {settings['engine']}")
         st.sidebar.write(f"Mode: {settings['mode']}")
         st.sidebar.write(f"Temperature: {settings['temperature']}")
