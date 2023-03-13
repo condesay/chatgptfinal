@@ -37,7 +37,7 @@ def main():
     engine_options = {
         "Davinci": {
             "Text": "text-davinci-003",
-            "Code": "davinci-codex"
+            "Code": "code-davinci-002"
         }
     }
 
