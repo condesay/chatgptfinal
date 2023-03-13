@@ -21,16 +21,11 @@ def generate_response(prompt, engine, temperature, max_tokens, top_p, frequency_
     return message
 
 # Define function to display chat messages
-def message(text, is_user=False):
-    if is_user:
-        st.write("You: " + text)
-    else:
-        st.write("Bot: " + text)
 
 # Define Streamlit app
 def main():
     # Set page title
-    st.set_page_config(page_title="ChatGPT Web App")
+    st.set_page_config(page_title="ChatGPT Web App Sayon")
 
     # Set up sidebar options
     engine_options = {
