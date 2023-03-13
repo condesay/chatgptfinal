@@ -53,28 +53,28 @@ def main():
     }
 
     # Create session state for chat history
-    if "chat_history" not in st.session_state:
-        st.session_state["chat_history"] = []
-
-    # Display page title and API key input
-    st.title("ChatGPT Web App")
-    api_key = st.text_input("Enter OpenAI API Key:", type="password")
-
-    # If API key is provided, display chat interface
     if api_key:
-        # Update OpenAI API key
-        openai.api_key = api_key
+        # storing the chat
+        if 'generated' not in st.session_state:
+            st.session_state['generated'] = []
 
-        # Display chat interface
-        st.header("Chat")
-        user_input = st.text_input("You:")
+        if 'past' not in st.session_state:
+            st.session_state['past'] = []
+
+        user_input=st.text_input("You:",key='input')
+
         if user_input:
-            message(user_input, is_user=True)
-            prompt = "\n".join([f"You: {msg}" for msg in st.session_state["chat_history"]] + [f"Bot: {user_input}"])
-            engine = engine_options[settings["engine"]][settings["mode"]]
-            response = generate_response(prompt, engine, settings["temperature"], settings["max_tokens"], settings["top_p"], settings["frequency_penalty"], settings["presence_penalty"])
-            message(response)
-            st.session_state["chat_history"].append(user_input)
+            output=generate_response(user_input, api_key)
+
+            #store the output
+            st.session_state['past'].append(user_input)
+            st.session_state['generated'].append(output)
+
+        if st.session_state['generated']:
+
+            for i in range(len(st.session_state['generated'])-1, -1, -1):
+                message(st.session_state["generated"][i], key=str(i))
+                message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
 
         # Display chat settings sidebar
         st.sidebar.title("Settings")
