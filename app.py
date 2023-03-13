@@ -17,7 +17,7 @@ def generate_response(prompt, engine, temperature, max_tokens, top_p, frequency_
         frequency_penalty=frequency_penalty,
         presence_penalty=presence_penalty
     )
-    message = completion.choices[0].text.strip()
+    message = completion.choices[0].text
     return message
 
 # Define function to display chat messages
