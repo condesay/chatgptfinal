@@ -35,7 +35,7 @@ def main():
     # Set up sidebar options
     engine_options = {
         "Davinci": {
-            "Text": "davinci-codex",
+            "Text": "text-davinci-003",
             "Code": "davinci-codex"
         }
     }
